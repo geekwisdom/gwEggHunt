@@ -1,0 +1,294 @@
+<html>
+<body>
+<div id="intro" style="width:400px;">
+<h1>Virtual Egg Hunt</h1>
+<p>
+This game is a virtual Easter Egg Hunt. The goal of the game is to find as many eggs as possible
+within 2 minutes.  Simply click around on the beautiful pictures in places you think the egg maybe
+hiding.
+</p>
+<button onclick="playGame();">Play Game</button>
+</div>
+<div id="scoreBoard" style="display:none;">
+<table>
+<td>Eggs Found</td>
+<td id="score"></td>
+<td width="60%">&nbsp;</td>
+<td>Time Left: </td>
+<td id="timer">1:59</td>
+</table>
+</div>
+<div id="pictureBoard" style="position:relative;display:none;">
+<img style="cursor:pointer;height:454px;" id="currentPic"></img>
+<img id="egg" ></img>
+
+</div>
+<div id="picButtons" style="display:none;">
+<button onclick="gwGame.PrevImage();">Previous</button>
+&nbsp;&nbsp;&nbsp;
+<button onclick="gwGame.NextImage();">Next</button>
+</div>
+</body>
+<script>
+
+//var pics=["./pics/image1.jpg","./pics/image2.jpg","./pics/image3.jpg","./pics/image4.jpg","./pics/image5.jpg","./pics/image7.jpg","./pics/image8.jpg","./pics/image8.jpg","./pics/image9.jpg"];
+
+
+var settings={}
+settings["scoreElement"]="score";
+settings["docElement"]="currentPic";
+settings["eggElement"]="egg";
+settings["timerElement"]="timer";
+settings["timerElement"]="timer";
+settings["soundFile"]="./sounds/correct.mp3";
+var EggAry=[];
+for (var i=1;i<9;i++) EggAry.push("./eggs/egg" + i + ".png"); 
+
+
+settings["EggAry"]=EggAry;
+
+//*********************************************************
+var theEggs=[];
+var eggDetails={};
+eggDetails["image"]="./pics/image1.jpg";
+var hiddenEgg={};
+hiddenEgg["x"]=446;
+hiddenEgg["y"]=238;
+var eggArray=[];
+eggArray.push({...hiddenEgg});
+
+hiddenEgg["x"]=377;
+hiddenEgg["y"]=189;
+eggArray.push({...hiddenEgg});
+
+hiddenEgg["x"]=522;
+hiddenEgg["y"]=199;
+eggArray.push({...hiddenEgg});
+
+
+hiddenEgg["x"]=387;
+hiddenEgg["y"]=199;
+eggArray.push({...hiddenEgg})
+
+
+hiddenEgg["x"]=278;
+hiddenEgg["y"]=189;
+eggArray.push({...hiddenEgg})
+
+
+eggDetails["hiddenEggs"]=eggArray;
+theEggs.push({...eggDetails});
+
+//****************
+
+eggDetails["image"]="./pics/image2.jpg";
+var hiddenEgg={};
+hiddenEgg["x"]=361;
+hiddenEgg["y"]=254;
+var eggArray=[];
+eggArray.push({...hiddenEgg});
+
+hiddenEgg["x"]=177;
+hiddenEgg["y"]=221;
+eggArray.push({...hiddenEgg});
+
+hiddenEgg["x"]=522;
+hiddenEgg["y"]=199;
+eggArray.push({...hiddenEgg});
+
+
+hiddenEgg["x"]=549;
+hiddenEgg["y"]=401;
+eggArray.push({...hiddenEgg})
+
+
+hiddenEgg["x"]=382;
+hiddenEgg["y"]=178;
+eggArray.push({...hiddenEgg})
+
+
+eggDetails["hiddenEggs"]=eggArray;
+theEggs.push({...eggDetails});
+
+
+
+
+
+
+//alert (gwGame.NextImage());
+//gwGame.PlayGame();
+var gwGame;
+window.addEventListener("load",function() { gwGame = new gwEggHunt(settings,theEggs); });
+
+function gwEggHunt(settings,imgData)
+{
+this.Settings=settings
+this.countdown=120;
+this.score=0;
+this.images=imgData;
+this.imgElName=this.Settings.docElement;
+this.ImageIndex=-1;
+this.currentImage = document.getElementById(this.Settings.docElement);
+
+}
+
+gwEggHunt.prototype.checkEgg = function (x,y)
+{
+//return true if x,y is near bounds of egg
+//false otherwise
+var box=10; //box size
+for (var i=0;i<this.images[this.ImageIndex]["hiddenEggs"].length;i++)
+ {
+ var hiddenEgg = this.images[this.ImageIndex]["hiddenEggs"][i];
+ var topX=hiddenEgg["x"] - box;
+ var topY=hiddenEgg["y"] - box;
+ var bottomX = hiddenEgg["x"] + box;
+ var bottomY = hiddenEgg["y"] + box;
+ console.clear()
+ console.log ("x:" + x + ",y:"+y);
+ console.log ("top: (" + topX + "," + topY + ") bottom: (" + bottomX + "," + bottomY + ")");
+
+ if (x > topX && y > topY && x < bottomX && y < bottomY) 
+    {
+    if (!(hiddenEgg.hasOwnProperty("found")))
+       {
+         hiddenEgg.found=true;
+         this.score++;
+         document.getElementById(this.Settings.scoreElement).textContent=this.score;
+         return true;
+       }
+    }
+ }
+return false;
+}
+
+gwEggHunt.prototype.NextImage = function()
+{
+var self=this;
+
+var eggEl = document.getElementById(self.Settings.eggElement)   ;
+eggEl.style.display="none";
+
+
+this.ImageIndex++;
+if (this.ImageIndex > this.images.length-1) this.ImageIndex=0;
+var retval=this.images[this.ImageIndex].image;
+this.currentImage.src=retval;
+return true;
+}
+
+gwEggHunt.prototype.PlayGame = function()
+{
+var self=this;
+
+var eggEl = document.getElementById(self.Settings.eggElement)   ;
+eggEl.style.display="none";
+
+var playSound = function(soundfile)
+{
+var audio = new Audio(soundfile);
+audio.play();
+}
+
+
+var getRandomInt = function (min, max) 
+{
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var getRndEgg = function()
+{
+var EggAry = self.Settings.EggAry;
+var index=getRandomInt(0,EggAry.length-1);
+return EggAry[index];
+}
+
+var findEgg =  function(e)
+  {
+ //var rect = e.target.getBoundingClientRect();
+    bounds=this.getBoundingClientRect();
+    var left=bounds.left;
+    var top=bounds.top;
+    var x = event.pageX - left;
+    var y = event.pageY - top;
+
+  if (self.checkEgg(x,y))
+   {
+  playSound(self.Settings.soundFile);
+  var eggEl = document.getElementById(self.Settings.eggElement);
+  eggEl.style.display="none";
+  eggEl.src=getRndEgg(); 
+  eggEl.style.position= "absolute";
+   eggEl.style.left=x;
+    eggEl.style.top=y;
+   eggEl.style.display="block"; 
+   
+   }
+ else
+ {
+var eggEl = document.getElementById(self.Settings.eggElement)   ;
+eggEl.style.display="none";
+}
+}
+
+var seconds_to_time = function (the_time) {
+    var sec_num = parseInt(the_time, 10); // don't forget the second param
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    return hours+':'+minutes+':'+seconds;
+}
+
+var runTimer = function ()
+{
+self.countdown--;
+if (self.countdown == 0)
+ {
+ alert ("Game Over!");
+ location.reload(true);
+ }
+else
+{
+document.getElementById(self.Settings["timerElement"]).textContent = seconds_to_time(self.countdown);
+setTimeout(function(){ runTimer() }, 1000);
+}
+}
+
+this.currentImage.addEventListener("click",findEgg);
+
+this.ImageIndex=getRandomInt(0,this.ImageIndex=this.images.length-1);
+this.NextImage();
+runTimer();
+setTimeout(function(){ runTimer(120); }, 1000);
+}
+
+
+gwEggHunt.prototype.PrevImage = function()
+{
+var self=this;
+this.ImageIndex--;
+if (this.ImageIndex < 0) this.ImageIndex=this.images.length-1;
+var retval=this.images[this.ImageIndex].image;
+
+this.currentImage.src=retval;
+return true;
+}
+
+
+function playGame()
+{
+document.getElementById("intro").style.display="none";
+document.getElementById("scoreBoard").style.display="block";
+document.getElementById("pictureBoard").style.display="block";
+document.getElementById("picButtons").style.display="block";
+gwGame.PlayGame();
+}
+
+</script>
+</html>
