@@ -35,11 +35,14 @@ SOFTWARE.
 
 function gwEggHunt(settings,imgData)
 {
+
 this.Settings=settings
 this.countdown=120;
 this.score=0;
 this.images=imgData;
 this.imgElName=this.Settings.docElement;
+var picImage=document.getElementById(this.imgElName);
+picImage.addEventListener('load', function() {picImage.style.display="block";  });
 this.ImageIndex=-1;
 this.currentImage = document.getElementById(this.Settings.docElement);
 
@@ -49,7 +52,7 @@ gwEggHunt.prototype.checkEgg = function (x,y)
 {
 //return true if x,y is near bounds of egg
 //false otherwise
-var box=10; //box size
+var box=20; //box size
 for (var i=0;i<this.images[this.ImageIndex]["hiddenEggs"].length;i++)
  {
  var hiddenEgg = this.images[this.ImageIndex]["hiddenEggs"][i];
@@ -136,8 +139,7 @@ var findEgg =  function(e)
   eggEl.style.position= "absolute";
    eggEl.style.left=x;
     eggEl.style.top=y;
-   eggEl.style.display="block"; 
-   
+     eggEl.style.display="block";
    }
  else
  {
@@ -186,6 +188,10 @@ gwEggHunt.prototype.PrevImage = function()
 {
 var self=this;
 this.ImageIndex--;
+
+var eggEl = document.getElementById(self.Settings.eggElement)   ;
+eggEl.style.display="none";
+
 if (this.ImageIndex < 0) this.ImageIndex=this.images.length-1;
 var retval=this.images[this.ImageIndex].image;
 
