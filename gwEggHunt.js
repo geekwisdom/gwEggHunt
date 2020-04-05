@@ -95,10 +95,27 @@ return true;
 
 gwEggHunt.prototype.PlayGame = function()
 {
+
+var getRandomInt = function (min, max) 
+{
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var getRndEgg = function()
+{
+var EggAry = self.Settings.EggAry;
+var index=getRandomInt(0,EggAry.length-1);
+return EggAry[index];
+}
+
+
 var self=this;
 
 var eggEl = document.getElementById(self.Settings.eggElement)   ;
 eggEl.style.display="none";
+eggEl.src=getRndEgg();
 
 var playSound = function(soundfile)
 {
@@ -135,7 +152,7 @@ var findEgg =  function(e)
   playSound(self.Settings.soundFile);
   var eggEl = document.getElementById(self.Settings.eggElement);
   eggEl.style.display="none";
-  eggEl.src=getRndEgg(); 
+   
   eggEl.style.position= "absolute";
    eggEl.style.left=x;
     eggEl.style.top=y;
@@ -144,7 +161,9 @@ var findEgg =  function(e)
  else
  {
 var eggEl = document.getElementById(self.Settings.eggElement)   ;
+eggEl.src=getRndEgg();
 eggEl.style.display="none";
+
 }
 }
 
@@ -165,13 +184,13 @@ var runTimer = function ()
 self.countdown--;
 if (self.countdown == 0)
  {
- alert ("Game Over!");
+ alert ("Game Over: You found " + self.score + " eggs!");
  location.reload(true);
  }
 else
 {
 document.getElementById(self.Settings["timerElement"]).textContent = seconds_to_time(self.countdown);
-setTimeout(function(){ runTimer() }, 1000);
+setTimeout(function(){ runTimer(); }, 1000);
 }
 }
 
@@ -180,7 +199,6 @@ this.currentImage.addEventListener("click",findEgg);
 this.ImageIndex=getRandomInt(0,this.ImageIndex=this.images.length-1);
 this.NextImage();
 runTimer();
-setTimeout(function(){ runTimer(120); }, 1000);
 }
 
 
